@@ -7,6 +7,7 @@ typedef struct
 {
     Vector2 pos;
     Vector2 vel;
+    size_t bounces;
 } Ball;
 
 #define DA_INIT_CAP 16
@@ -48,9 +49,8 @@ float spawn_start_time = 0.0;
 
 void spawn_ball()
 {
-    float delta = GetTime() - spawn_start_time;
     Vector2 pos = GetMousePosition();
-    Vector2 vel = Vector2Scale(Vector2Subtract(pos, spawn_pos), 0.5 * 1.0 / delta);
+    Vector2 vel = Vector2Multiply(Vector2Subtract(pos, spawn_pos), (Vector2){ .x = 3, .y = 3 });
     Ball ball = { .pos = spawn_pos, .vel = vel };
     da_append(&balls, ball);
 }
@@ -84,6 +84,12 @@ int main(void)
 
         for (size_t i = 0; i < balls.count; ++i) {
             Ball *ball = &balls.items[i];
+            Color color = RED;
+            if (ball->bounces > 10) continue;
+            else if (ball->bounces > 7) {
+                color = ColorAlpha(RED, (10 - ball->bounces) / 3.0);
+            }
+
             if (ball->pos.x - RADIUS < 0) {
                 ball->pos.x = RADIUS;
                 ball->vel.x *= -ELASTICITY_X * BOUNCE;
@@ -95,15 +101,17 @@ int main(void)
             if (ball->pos.y - RADIUS < 0) {
                 ball->pos.y = RADIUS;
                 ball->vel.y *= -ELASTICITY_Y * BOUNCE;
+                ball->bounces++;
             } else if (ball->pos.y + RADIUS > HEIGHT) {
                 ball->pos.y = HEIGHT - RADIUS;
                 ball->vel.y *= -ELASTICITY_Y * BOUNCE;
+                ball->bounces++;
             }
 
             ball->vel = Vector2Add(ball->vel, Vector2Scale(gravity, dt));
             ball->pos = Vector2Add(ball->pos, Vector2Scale(ball->vel, dt));
 
-            DrawCircleV(ball->pos, RADIUS, RED);
+            DrawCircleV(ball->pos, RADIUS, color);
         }
 
         EndDrawing();
