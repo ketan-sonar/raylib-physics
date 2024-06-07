@@ -42,11 +42,16 @@ typedef struct
 
 Balls balls = {0};
 Vector2 gravity = { .x = 0, .y = 1000 };
+bool spawn_mode = false;
+Vector2 spawn_pos = {0};
+float spawn_start_time = 0.0;
 
-void spawn_ball(Vector2 pos)
+void spawn_ball()
 {
-    Vector2 vel = { .x = 200, .y = 0 };
-    Ball ball = { .pos = pos, .vel = vel };
+    float delta = GetTime() - spawn_start_time;
+    Vector2 pos = GetMousePosition();
+    Vector2 vel = Vector2Scale(Vector2Subtract(pos, spawn_pos), 1.0 / delta);
+    Ball ball = { .pos = spawn_pos, .vel = vel };
     da_append(&balls, ball);
 }
 
@@ -57,7 +62,16 @@ int main(void)
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            spawn_ball(GetMousePosition());
+            spawn_mode = true;
+            spawn_pos = GetMousePosition();
+            spawn_start_time = GetTime();
+        }
+
+        if (spawn_mode) {
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                spawn_ball();
+                spawn_mode = false;
+            }
         }
 
         float dt = GetFrameTime();
