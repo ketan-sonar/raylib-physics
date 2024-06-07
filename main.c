@@ -30,9 +30,6 @@ typedef struct
     }                                                                          \
     (da)->items[(da)->count++] = (item);
 
-#define WIDTH 800
-#define HEIGHT 600
-
 #define RADIUS 20
 
 #define BG_COLOR CLITERAL(Color){ 0x18, 0x18, 0x18, 0xFF }
@@ -40,6 +37,9 @@ typedef struct
 #define ELASTICITY_X 0.4
 #define ELASTICITY_Y 0.6
 #define BOUNCE 1.25
+
+size_t width = 800;
+size_t height = 600;
 
 Balls balls = {0};
 Vector2 gravity = { .x = 0, .y = 1000 };
@@ -57,10 +57,14 @@ void spawn_ball()
 
 int main(void)
 {
-    InitWindow(WIDTH, HEIGHT, "Game!");
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);    // Window configuration flags
+    InitWindow(width, height, "Game!");
 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
+        width = GetScreenWidth();
+        height = GetScreenHeight();
+
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             spawn_mode = true;
             spawn_pos = GetMousePosition();
