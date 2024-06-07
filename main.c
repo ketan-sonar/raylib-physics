@@ -37,10 +37,11 @@ typedef struct
 #define BG_COLOR CLITERAL(Color){ 0x18, 0x18, 0x18, 0xFF }
 
 #define ELASTICITY_X 0.4
-#define ELASTICITY_Y 0.8
+#define ELASTICITY_Y 0.6
+#define BOUNCE 1.25
 
 Balls balls = {0};
-Vector2 acc = { .x = 0, .y = 981 };
+Vector2 gravity = { .x = 0, .y = 1000 };
 
 void spawn_ball(Vector2 pos)
 {
@@ -68,21 +69,21 @@ int main(void)
             Ball *ball = &balls.items[i];
             if (ball->pos.x - RADIUS < 0) {
                 ball->pos.x = RADIUS;
-                ball->vel.x *= -ELASTICITY_X;
+                ball->vel.x *= -ELASTICITY_X * BOUNCE;
             } else if (ball->pos.x + RADIUS > WIDTH) {
                 ball->pos.x = WIDTH - RADIUS;
-                ball->vel.x *= -ELASTICITY_X;
+                ball->vel.x *= -ELASTICITY_X * BOUNCE;
             }
 
             if (ball->pos.y - RADIUS < 0) {
                 ball->pos.y = RADIUS;
-                ball->vel.y *= -ELASTICITY_Y;
+                ball->vel.y *= -ELASTICITY_Y * BOUNCE;
             } else if (ball->pos.y + RADIUS > HEIGHT) {
                 ball->pos.y = HEIGHT - RADIUS;
-                ball->vel.y *= -ELASTICITY_Y;
+                ball->vel.y *= -ELASTICITY_Y * BOUNCE;
             }
 
-            ball->vel = Vector2Add(ball->vel, Vector2Scale(acc, dt));
+            ball->vel = Vector2Add(ball->vel, Vector2Scale(gravity, dt));
             ball->pos = Vector2Add(ball->pos, Vector2Scale(ball->vel, dt));
 
             DrawCircleV(ball->pos, RADIUS, RED);
