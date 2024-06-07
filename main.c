@@ -36,13 +36,14 @@ typedef struct
 
 #define ELASTICITY_X 0.4
 #define ELASTICITY_Y 0.6
-#define BOUNCE 1.25
+#define BOUNCE 1.5
+#define BALL_BOUNCE_LIMIT 15
 
 size_t width = 800;
 size_t height = 600;
 
 Balls balls = {0};
-Vector2 gravity = { .x = 0, .y = 1000 };
+Vector2 gravity = { .x = 0, .y = 3000 };
 bool spawn_mode = false;
 Vector2 spawn_pos = {0};
 float spawn_start_time = 0.0;
@@ -100,10 +101,13 @@ int main(void)
         for (size_t i = 0; i < balls.count; ++i) {
             Ball *ball = &balls.items[i];
             Color color = RED;
-            if (ball->bounces > 12) continue;
-            else if (ball->bounces > 7) {
-                color = ColorAlpha(RED, (12 - ball->bounces) / 5.0);
+            if (ball->bounces > BALL_BOUNCE_LIMIT) continue;
+            else if (ball->bounces > 10) {
+                color = ColorAlpha(RED, (BALL_BOUNCE_LIMIT - ball->bounces) / 5.0);
             }
+
+            ball->vel = Vector2Add(ball->vel, Vector2Scale(gravity, dt));
+            ball->pos = Vector2Add(ball->pos, Vector2Scale(ball->vel, dt));
 
             if (ball->pos.x - RADIUS < 0) {
                 ball->pos.x = RADIUS;
@@ -122,9 +126,6 @@ int main(void)
                 ball->vel.y *= -ELASTICITY_Y * BOUNCE;
                 ball->bounces++;
             }
-
-            ball->vel = Vector2Add(ball->vel, Vector2Scale(gravity, dt));
-            ball->pos = Vector2Add(ball->pos, Vector2Scale(ball->vel, dt));
 
             DrawCircleV(ball->pos, RADIUS, color);
         }
