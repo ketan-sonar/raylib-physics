@@ -89,16 +89,16 @@ int main(void)
         for (size_t i = 0; i < balls.count; ++i) {
             Ball *ball = &balls.items[i];
             Color color = RED;
-            if (ball->bounces > 10) continue;
+            if (ball->bounces > 12) continue;
             else if (ball->bounces > 7) {
-                color = ColorAlpha(RED, (10 - ball->bounces) / 3.0);
+                color = ColorAlpha(RED, (12 - ball->bounces) / 5.0);
             }
 
             if (ball->pos.x - RADIUS < 0) {
                 ball->pos.x = RADIUS;
                 ball->vel.x *= -ELASTICITY_X * BOUNCE;
-            } else if (ball->pos.x + RADIUS > WIDTH) {
-                ball->pos.x = WIDTH - RADIUS;
+            } else if (ball->pos.x + RADIUS > width) {
+                ball->pos.x = width - RADIUS;
                 ball->vel.x *= -ELASTICITY_X * BOUNCE;
             }
 
@@ -106,8 +106,8 @@ int main(void)
                 ball->pos.y = RADIUS;
                 ball->vel.y *= -ELASTICITY_Y * BOUNCE;
                 ball->bounces++;
-            } else if (ball->pos.y + RADIUS > HEIGHT) {
-                ball->pos.y = HEIGHT - RADIUS;
+            } else if (ball->pos.y + RADIUS > height) {
+                ball->pos.y = height - RADIUS;
                 ball->vel.y *= -ELASTICITY_Y * BOUNCE;
                 ball->bounces++;
             }
