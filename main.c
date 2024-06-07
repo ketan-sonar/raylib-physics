@@ -50,7 +50,7 @@ void spawn_ball()
 {
     float delta = GetTime() - spawn_start_time;
     Vector2 pos = GetMousePosition();
-    Vector2 vel = Vector2Scale(Vector2Subtract(pos, spawn_pos), 1.0 / delta);
+    Vector2 vel = Vector2Scale(Vector2Subtract(pos, spawn_pos), 0.5 * 1.0 / delta);
     Ball ball = { .pos = spawn_pos, .vel = vel };
     da_append(&balls, ball);
 }
@@ -67,7 +67,13 @@ int main(void)
             spawn_start_time = GetTime();
         }
 
+        BeginDrawing();
+        ClearBackground(BG_COLOR);
+
         if (spawn_mode) {
+            DrawCircleV(spawn_pos, RADIUS, ColorAlpha(RED, 0.5));
+            DrawLineV(spawn_pos, GetMousePosition(), WHITE);
+            DrawRing(GetMousePosition(), RADIUS - 2.0, RADIUS, 0, 360, 100, WHITE);
             if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
                 spawn_ball();
                 spawn_mode = false;
@@ -75,9 +81,6 @@ int main(void)
         }
 
         float dt = GetFrameTime();
-
-        BeginDrawing();
-        ClearBackground(BG_COLOR);
 
         for (size_t i = 0; i < balls.count; ++i) {
             Ball *ball = &balls.items[i];
