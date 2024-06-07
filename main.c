@@ -46,6 +46,7 @@ Vector2 gravity = { .x = 0, .y = 1000 };
 bool spawn_mode = false;
 Vector2 spawn_pos = {0};
 float spawn_start_time = 0.0;
+bool first_render = true;
 
 void spawn_ball()
 {
@@ -65,14 +66,24 @@ int main(void)
         width = GetScreenWidth();
         height = GetScreenHeight();
 
+        BeginDrawing();
+        ClearBackground(BG_COLOR);
+
+        if (first_render) {
+            char *text = "Click and Drag to Spawn Balls.";
+            int font_size = 24;
+            int text_size = MeasureText(text, font_size);
+            int center_x = width / 2 - text_size / 2;
+            int center_y = height / 2 - font_size / 2;
+            DrawText(text, center_x, center_y, font_size, WHITE);
+        }
+
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            first_render = false;
             spawn_mode = true;
             spawn_pos = GetMousePosition();
             spawn_start_time = GetTime();
         }
-
-        BeginDrawing();
-        ClearBackground(BG_COLOR);
 
         if (spawn_mode) {
             DrawCircleV(spawn_pos, RADIUS, ColorAlpha(RED, 0.5));
