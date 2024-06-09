@@ -39,11 +39,13 @@ typedef struct
 #define BOUNCE 1.5
 #define BALL_BOUNCE_LIMIT 15
 
-size_t width = 800;
-size_t height = 600;
+#define ONE_METER 1080
+
+size_t width = 1080;
+size_t height = 768;
 
 Balls balls = {0};
-Vector2 gravity = { .x = 0, .y = 3000 };
+Vector2 gravity = { .x = 0, .y = 9.81 * ONE_METER };
 bool spawn_mode = false;
 Vector2 spawn_pos = {0};
 float spawn_start_time = 0.0;
@@ -52,14 +54,14 @@ bool first_render = true;
 void spawn_ball()
 {
     Vector2 pos = GetMousePosition();
-    Vector2 vel = Vector2Multiply(Vector2Subtract(pos, spawn_pos), (Vector2){ .x = 3, .y = 3 });
+    Vector2 vel = Vector2Scale(Vector2Subtract(pos, spawn_pos), -9.81);
     Ball ball = { .pos = spawn_pos, .vel = vel };
     da_append(&balls, ball);
 }
 
 int main(void)
 {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);    // Window configuration flags
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(width, height, "Game!");
 
     SetTargetFPS(60);
@@ -128,6 +130,7 @@ int main(void)
             }
 
             DrawCircleV(ball->pos, RADIUS, color);
+            // DrawPoly(ball->pos, 4, 30, 0, YELLOW);
         }
 
         EndDrawing();
